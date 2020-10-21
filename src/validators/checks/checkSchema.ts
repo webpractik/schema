@@ -6,7 +6,7 @@ export class CheckSchema extends AbstractCheckSchema {
 
     protected errCode = 'err-schema-validate';
 
-    isValid(schema: string): boolean {
+    public isValid(schema: string): boolean {
         const joiSchema = this.getJoiSchema();
         const validateResult = joiSchema.validate(this.schema);
         if (validateResult.error) {

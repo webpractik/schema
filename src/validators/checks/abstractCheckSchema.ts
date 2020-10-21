@@ -9,7 +9,7 @@ export abstract class AbstractCheckSchema implements CheckValidation {
     protected errDescription: string;
     protected schema: SchemaDto;
 
-    abstract isValid(schema: string): boolean;
+    public abstract isValid(schema: string): boolean;
 
     public getErrors(): ErrorDto[] {
         return this.errors;
@@ -36,6 +36,10 @@ export abstract class AbstractCheckSchema implements CheckValidation {
     }
 
     protected decodeSchema(schema: string): SchemaDto {
+        const jsonSchema = JSON.parse(schema);
+        if (!jsonSchema.selections) {
+            throw new Error('В документе должен обязательно присутствовать массив selections');
+        }
         return JSON.parse(schema);
     }
 

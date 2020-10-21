@@ -6,12 +6,12 @@ import { ErrorsMap } from "../../errors/errorsMap";
 export class CheckSubTypes extends AbstractCheckSchema implements ErrorsMapUser {
 
     _errorsMap: ErrorsMap;
-    errCode = 'bad-subtype';
-    errDescription = 'Подтип ошибки не соответствует её типу';
+    protected errCode = 'bad-subtype';
+    protected errDescription = 'Подтип ошибки не соответствует её типу';
 
     public setErrorsMap: () => void;
 
-    isValid(schema: string): boolean {
+    public isValid(schema: string): boolean {
         const selectionsSubtypes = this.schema.selections.filter(selection => selection.subtype);
         for (const selection of selectionsSubtypes) {
             const error = this._errorsMap.errors.get(selection.type);

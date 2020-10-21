@@ -10,7 +10,7 @@ export class CheckEqualityCoordinates extends AbstractCheckSchema implements Err
     protected errDescription = 'startSelection и endSelection равны';
     public setErrorsMap: () => void;
 
-    isValid(schema: string): boolean {
+    public isValid(schema: string): boolean {
         for (const selection of this.schema.selections) {
             if (selection.startSelection === selection.endSelection) {
                 const error = this._errorsMap.errors.get(selection.type);

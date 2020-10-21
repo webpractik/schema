@@ -18,6 +18,7 @@ import { CheckSchema } from "./checks/checkSchema";
 
 export class Validator extends AbstractCheckSchema implements TextHandler {
 
+    private readonly EMPTY_CHECKS_ERROR = 'Проверки не были созданы. Перед запуском валидации запустите метод createChecks';
     private readonly listChecks = [
         CheckEmptyFieldType,
         CheckErrorTypeCorrection,
@@ -31,24 +32,29 @@ export class Validator extends AbstractCheckSchema implements TextHandler {
         CheckOriginalText,
         CheckSchema,
     ];
-
     private checks: AbstractCheckSchema[] = [];
     private errorsMapFactory: ErrorMapFactory;
+    protected errCode = 'fatal-check-error';
     _textCheckCallback: (publicId: string, text: string) => boolean;
     public setValidatesCallback: (callback: (publicId: string, text: string) => boolean) => void;
 
     public isValid(schema: string): boolean {
+        if (this.checks.length < 1) throw new Error(this.EMPTY_CHECKS_ERROR);
         for (const check of this.checks) {
             this.prepareCheck(check);
             check.setSchema(this.decodeSchema(schema));
-            if (!check.isValid(schema)) {
-                this.errors = this.errors.concat(check.getErrors());
+            try {
+                if (!check.isValid(schema)) {
+                    this.errors = this.errors.concat(check.getErrors());
+                }
+            } catch (e) {
+                this.handleCheckError(e);
             }
         }
         return this.hasNoErrors();
     }
 
-    public async createChecks(): Promise<void> {
+    public createChecks(): void {
         this.checks = this.listChecks.map(checkClass => this.createCheck(checkClass));
     }
 
@@ -65,7 +71,7 @@ export class Validator extends AbstractCheckSchema implements TextHandler {
 
     private prepareCheck(check: AbstractCheckSchema) {
         this.prepareChecksUsingErrors(check);
-        if (isTextHandler(check)) {
+        if (isTextHandler(check) && this._textCheckCallback) {
             check.setValidatesCallback(this._textCheckCallback);
         }
     }
@@ -81,6 +87,16 @@ export class Validator extends AbstractCheckSchema implements TextHandler {
         }
         return;
     }
+
+    private handlePrepareError() {
+
+    }
+
+    private handleCheckError(error: Error) {
+        this.errDescription = `Запуск проверки завершился ошибкой ${error.message}`
+        this.errors.push(this.createError());
+    }
+
 }
 
 applyMixins(Validator, [TextHandler]);

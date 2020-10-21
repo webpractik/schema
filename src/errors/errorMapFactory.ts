@@ -6,7 +6,7 @@ import { ErrorsMap } from "./errorsMap";
 
 export class ErrorMapFactory {
 
-    private readonly CATALOG_SERVICE_URL = 'https://rc.catalog-errors.readable.w6p.ru/errors/all';
+    private readonly CATALOG_SERVICE_URL = 'https://catalog-errors.readable.upgreat.one/errors/all';
     private readonly CACHING_TIME = 86400000;
     private map: ErrorsMap;
 
