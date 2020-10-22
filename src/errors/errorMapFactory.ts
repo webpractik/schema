@@ -6,7 +6,8 @@ import { ErrorsMap } from "./errorsMap";
 
 export class ErrorMapFactory {
 
-    private readonly CATALOG_SERVICE_URL = 'https://catalog-errors.readable.upgreat.one/errors/all';
+    private readonly CATALOG_SERVICE_URL = 'https://catalog-errors.readable.upgreat.one/errors';
+    private readonly SUBJECTS = ['rus', 'lit', 'social', 'hist', 'eng', 'rus-free', 'eng-free'];
     private readonly CACHING_TIME = 86400000;
     private map: ErrorsMap;
 
@@ -30,49 +31,65 @@ export class ErrorMapFactory {
     }
 
     private async createErrorsMap(): Promise<ErrorsMap> {
-        const catalogErrors = await this.getErrorsFromCatalogService();
-        this.map = await this.buildMap(catalogErrors);
+        this.map = await this.buildMap();
         setTimeout(this.createErrorsMap, this.CACHING_TIME);
         return this.map;
     }
 
-    private buildMap(errors: ErrorDto[]): ErrorsMap {
+    private async buildMap(): Promise<ErrorsMap> {
         const errorsMap = new ErrorsMap();
-        errorsMap.errors = this.fillMap(errors);
+        errorsMap.errors = await this.fillMap();
         return errorsMap;
     }
 
-    private fillMap(errors: ErrorDto[]) {
-        const map = new Map<string, ErrorDto>();
-        for (const error of errors) {
-            map.set(error.code, error);
+    private async fillMap(): Promise<Map<string, Map<string, ErrorDto>>> {
+        const map = new Map();
+        for (const subject of this.SUBJECTS) {
+            map.set(subject, new Map());
+            const errorsSubjectsMap: Map<string, ErrorDto> = map.get(subject)
+            const errors = await this.getErrorsBySubject(subject);
+          /*  console.log('errrrrrrrrrrrorrs==================> ', subject, errors);*/
+            errors.forEach((error) => errorsSubjectsMap.set(error.code.toLowerCase(), error));
         }
         return map;
     }
 
-    private getErrorsFromCatalogService(): Promise<ErrorDto[]> {
-        return axios.get(this.CATALOG_SERVICE_URL).then((response) => {
+    getErrorsBySubject(subject: string): Promise<ErrorDto[]> {
+        return axios.get(this.CATALOG_SERVICE_URL + `?subject=${subject}`).then((response) => {
             return this.buildErrors(response.data);
         });
     }
 
-    private async buildErrors(catalogErrors: any[]): Promise<ErrorDto[]> {
-        return catalogErrors.map(error => this.buildError(error));
+    private buildErrors(catalogErrors: any[]): ErrorDto[] {
+        let result: ErrorDto[] = [];
+        for (const category of catalogErrors) {
+            result = result.concat(this.buildErrorFromCategory(category));
+            if (category.sub_categories) {
+                for (const subCategory of category.sub_categories) {
+                    result = result.concat(this.buildErrorFromCategory(subCategory));
+                }
+            }
+        }
+        return result;
     }
 
-    private buildError(catalogError: any): ErrorDto {
-        const error = new ErrorDto();
-        error.id = catalogError.id;
-        error.code = catalogError.code;
-        error.name = catalogError.name;
-        error.description = catalogError.description;
-        error.hasCorrection = catalogError.has_correction;
-        error.onFullText = catalogError.on_full_text;
-        error.hasRelationFragment = catalogError.hasRelationFragment;
-        error.disclosure = catalogError.disclosure;
-        error.category = this.buildCategory(catalogError.category);
-        error.fragments = this.buildFragments(catalogError.fragments);
-        return error;
+
+    private buildErrorFromCategory(catalogError: any): ErrorDto[] {
+        const category = this.buildCategory(catalogError);
+        return catalogError.errors.map((error: any) => {
+            const errorDto = new ErrorDto();
+            errorDto.id = error.id;
+            errorDto.code = error.code;
+            errorDto.name = error.name;
+            errorDto.description = error.description;
+            errorDto.hasCorrection = error.has_correction;
+            errorDto.onFullText = error.on_full_text;
+            errorDto.hasRelationFragment = error.hasRelationFragment;
+            errorDto.disclosure = error.disclosure;
+            errorDto.category = category;
+            errorDto.fragments = this.buildFragments(error.fragments);
+            return errorDto;
+        });
     }
 
     private buildCategory(catalogErrorCategory: any): ErrorCategoryDto {

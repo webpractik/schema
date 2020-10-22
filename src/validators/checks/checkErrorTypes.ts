@@ -9,26 +9,20 @@ export class CheckErrorTypes extends AbstractCheckSchema implements ErrorsMapUse
     _errorsMap: ErrorsMap;
     protected errCode = 'bad-error-type';
     protected errDescription = 'размеченные типы ошибок не соответствуют предмету размеченного файла';
-
+    public getSubjectErrorsMap: (subjectCode: string) => Map<string, ErrorDto>;
     public setErrorsMap: () => void;
 
     public isValid(schema: string): boolean {
-        const subjectCode = this.schema.meta.subject;
-        const subjectErrors = this.getSubjectErrors(subjectCode);
-        const selectionTypes = this.schema.selections.map(selection => selection.type);
+        const subjectErrorsMap = this.getSubjectErrorsMap(this.schema.meta.subject);
+        const selectionTypes = this.schema.selections.map(selection => selection.type.toLowerCase());
         for (const type of selectionTypes) {
-            const findErr = subjectErrors.find(error => error.code === type);
+            const findErr = subjectErrorsMap.get(type);
             if (findErr === undefined) {
-                this.errors = [this.createError()];
-                break;
+                this.errDescription = `Тип ошибки ${type} не соответствуют предмету размеченного файла ${this.schema.meta.subject}`;
+                this.errors.push(this.createError());
             }
         }
         return this.hasNoErrors();
-    }
-
-    private getSubjectErrors(subjectCode: string): ErrorDto[] {
-        const errors = Array.from(this._errorsMap.errors.values());
-        return errors.filter(error => error.category.subjectCode === subjectCode);
     }
 
 }

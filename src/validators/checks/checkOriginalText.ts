@@ -11,7 +11,7 @@ export class CheckOriginalText extends AbstractCheckSchema implements TextHandle
     public setValidatesCallback: (callback: (publicId: string, text: string) => boolean) => void;
 
     public isValid(schema: string): boolean {
-        if (this._textCheckCallback) {
+        if (this._textCheckCallback !== undefined) {
             const resultCallback = this._textCheckCallback(this.schema.meta.id, this.schema.text)
             if (!resultCallback) {
                 this.errors.push(this.createError());
