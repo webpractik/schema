@@ -10,7 +10,11 @@ export class CheckRangeMarkup extends AbstractCheckSchema {
         const badRangeSelections = this.schema.selections.filter(selection =>
             (selection.startSelection > textLength || selection.endSelection > textLength));
         if (badRangeSelections.length > 0) {
-            this.errors.push(this.createError());
+            badRangeSelections.forEach((badRangeSelection) => {
+                this.errDescription = `Не попадение цифр диапазона разметок в записи ${badRangeSelection.id} (начало ${badRangeSelection.startSelection} и конец ${badRangeSelection.endSelection}) в длину текста ${textLength}.`;
+                this.errors.push(this.createError());
+            })
+
         }
         return this.hasNoErrors();
     }

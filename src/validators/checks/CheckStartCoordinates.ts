@@ -8,7 +8,11 @@ export class CheckStartCoordinates extends AbstractCheckSchema {
     public isValid(schema: string): boolean {
         const badSelections = this.schema.selections.filter(selection => (selection.endSelection < selection.startSelection));
         if (badSelections.length > 0) {
-            this.errors.push(this.createError());
+            badSelections.forEach((badSelection) => {
+                this.errDescription = `В selection ${badSelection.id} endSelection меньше чем startSelection`;
+                this.errors.push(this.createError());
+            })
+
         }
         return this.hasNoErrors();
     }
