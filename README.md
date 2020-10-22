@@ -50,7 +50,7 @@ validator.refresh();
 
 Просле этого валидатор готов к проверке следующего документа.
 
-##usage
+## Пример работы
 ```ts
 const testDoc = 'test markup in format JSON';
 
