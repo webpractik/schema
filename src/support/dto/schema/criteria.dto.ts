@@ -1,3 +1,3 @@
 export class CriteriaDto {
-    [criteria: string]: number | string;
+  [criteria: string]: number | string;
 }

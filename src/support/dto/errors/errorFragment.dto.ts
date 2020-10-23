@@ -1,4 +1,4 @@
 export class ErrorFragmentDto {
-    code: string;
-    description: string;
+  code: string;
+  description: string;
 }
