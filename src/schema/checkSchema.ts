@@ -1,18 +1,22 @@
 import { AbstractCheckSchema } from './abstractCheckSchema';
 import * as joi from 'joi';
 import { ObjectSchema } from 'joi';
+import { Schema } from '../../schema/schema';
+import { ValidationResult } from '../validationResult';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckSchema extends AbstractCheckSchema {
-  protected errCode = 'err-schema-validate';
+  protected readonly errCode = 'err-schema-validate';
 
-  public isValid(schema: string): boolean {
+  public validate(schema: Schema): ValidationResult {
     const joiSchema = this.getJoiSchema();
-    const validateResult = joiSchema.validate(this.schema);
+    const errors: ValidationErrorDto[] = [];
+    const validateResult = joiSchema.validate(schema);
     if (validateResult.error) {
-      this.errDescription = validateResult.error.message;
-      this.errors.push(this.createError());
+      const errDescription = validateResult.error.message;
+      errors.push(new ValidationErrorDto(this.errCode, errDescription));
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 
   private getJoiSchema(): ObjectSchema {
