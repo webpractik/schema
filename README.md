@@ -1,12 +1,14 @@
 # Schema: пакет json схемы для обмена данными в рамках конкурса.
+
 Содержит в себе валидатор схемы.
 
 ## Начало работы: конфигурирование объекта Validator
 
-Перед использованием валидации нужно получить объект ErrorMapFactory - Обязательный этап
+Перед использованием валидации нужно получить объект ErrorMap - Обязательный этап
 
 ```ts
-ErrorMapFactory.createErrorMapFactory().then((errorMapFactory) => {});
+const errMap = await ErrorMapFactory.createErrorMap();
+validator.setErrorsMap(errMap);
 ```
 
 Далее в объект валидации нужно передать созданный объект ErrorMapFactory - Обязательный этап
@@ -20,52 +22,31 @@ validator.setErrorsMapFactory(errorMapFactory);
 В качестве входных данных она принимает публичный id текста и исходный текст
 
 ```ts
-validator.setValidatesCallback((publicId, text) => {
-  return true;
-});
+validator.addChecker(
+  new CheckOriginalText((publicId, text) => {
+    return true;
+  }),
+);
 ```
-
-Обязательный этап - запуск создания проверок после того как конфигурирование объекта закончено
-
-```ts
-validator.createChecks();
-```
-
-Запуск проверки функция validator.isValid ожидает на входе json строку проверяемого документа.  
-В случае провала проверки функция validator.getErrors() вернёт все найденные ошибки
-
-```ts
-const isValid = validator.isValid(testDoc);
-if (isValid) {
-  console.log(validator.getErrors());
-}
-```
-
-Обязательный этап - сброс состояния валидатора после проведения проверки
-
-```ts
-validator.refresh();
-```
-
-Просле этого валидатор готов к проверке следующего документа.
 
 ## Пример работы
 
 ```ts
-const testDoc = 'test markup in format JSON';
-
-ErrorMapFactory.createErrorMapFactory().then((errorMapFactory) => {
+async function example() {
+  const schema = Schema.fromJson(jsonDoc);
+  const errMap = await ErrorMapFactory.createErrorMap();
   const validator = new Validator();
-  validator.setErrorsMapFactory(errorMapFactory);
-  validator.setValidatesCallback((publicId, text) => {
-    return true;
-  });
-  validator.createChecks();
-  const isValid = validator.isValid(testDoc);
-  if (isValid) {
-    console.log(validator.getErrors());
-  }
-
-  validator.refresh();
-});
+  validator.setErrorsMap(errMap);
+  validator.addChecker(
+    new CheckOriginalText((publicId, text) => {
+      return true;
+    }),
+  );
+  const resultValidation = validator.validate(schema);
+  console.log(
+    'resultValidation',
+    resultValidation.status,
+    resultValidation.errors,
+  );
+}
 ```

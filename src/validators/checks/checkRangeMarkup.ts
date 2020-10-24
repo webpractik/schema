@@ -1,23 +1,25 @@
 import { AbstractCheckSchema } from './abstractCheckSchema';
+import { Schema } from '../../schema/schema';
+import { ValidationResult } from '../validationResult';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckRangeMarkup extends AbstractCheckSchema {
-  protected errCode = 'bad-range';
-  protected errDescription =
-    'Не попадение цифр диапазона разметок (начало и конец) в длину текста. ';
+  protected readonly errCode = 'bad-range';
 
-  public isValid(schema: string): boolean {
-    const textLength = this.schema.text.length;
-    const badRangeSelections = this.schema.selections.filter(
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
+    const textLength = schema.text.length;
+    const badRangeSelections = schema.selections.filter(
       (selection) =>
         selection.startSelection > textLength ||
         selection.endSelection > textLength,
     );
     if (badRangeSelections.length > 0) {
       badRangeSelections.forEach((badRangeSelection) => {
-        this.errDescription = `Не попадение цифр диапазона разметок в записи ${badRangeSelection.id} (начало ${badRangeSelection.startSelection} и конец ${badRangeSelection.endSelection}) в длину текста ${textLength}.`;
-        this.errors.push(this.createError());
+        const errDescription = `Не попадение цифр диапазона разметок в записи ${badRangeSelection.id} (начало ${badRangeSelection.startSelection} и конец ${badRangeSelection.endSelection}) в длину текста ${textLength}.`;
+        errors.push(new ValidationErrorDto(this.errCode, errDescription));
       });
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }

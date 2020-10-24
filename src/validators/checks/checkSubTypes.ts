@@ -3,23 +3,26 @@ import { ErrorsMapUser } from './mixins/errorsMapUser';
 import { applyMixins } from '../../support/applyMixins';
 import { ErrorsMap } from '../../errors/errorsMap';
 import { ErrorDto } from '../../support/dto/errors/error.dto';
+import { Schema } from '../../schema/schema';
+import { ValidationResult } from '../validationResult';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckSubTypes
   extends AbstractCheckSchema
   implements ErrorsMapUser {
   _errorsMap: ErrorsMap;
-  protected errCode = 'bad-subtype';
-  protected errDescription = 'Подтип ошибки не соответствует её типу';
+  protected readonly errCode = 'bad-subtype';
 
   public setErrorsMap: () => void;
   public getSubjectErrorsMap: (subjectCode: string) => Map<string, ErrorDto>;
 
-  public isValid(schema: string): boolean {
-    const selectionsSubtypes = this.schema.selections.filter(
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
+    const selectionsSubtypes = schema.selections.filter(
       (selection) => selection.subtype,
     );
     for (const selection of selectionsSubtypes) {
-      const error = this.getSubjectErrorsMap(this.schema.meta.subject).get(
+      const error = this.getSubjectErrorsMap(schema.meta.subject).get(
         selection.type.toLowerCase(),
       );
       if (error) {
@@ -27,12 +30,12 @@ export class CheckSubTypes
           (fragment) => fragment.code === selection.subtype,
         );
         if (fragment === undefined) {
-          this.errDescription = `Подтип ошибки ${selection.subtype} не соответствует её типу ${selection.type}`;
-          this.errors = [this.createError()];
+          const errDescription = `Подтип ошибки ${selection.subtype} не соответствует её типу ${selection.type}`;
+          errors.push(new ValidationErrorDto(this.errCode, errDescription));
         }
       }
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }
 

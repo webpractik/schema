@@ -17,28 +17,28 @@ export class ErrorMapFactory {
     'eng-free',
   ];
   private readonly CACHING_TIME = 86400000;
-  private map: ErrorsMap;
+  private _map: ErrorsMap;
 
-  private constructor() {}
+  get map(): ErrorsMap {
+    return this._map;
+  }
 
-  public static async createErrorMapFactory(): Promise<ErrorMapFactory> {
+  public static async createErrorMap(): Promise<ErrorsMap> {
     const factory = new ErrorMapFactory();
     await factory.createErrorsMap();
-    return factory;
+    return factory.map;
   }
+
+  private constructor() {}
 
   public async refreshMap(): Promise<ErrorsMap> {
     return this.createErrorsMap();
   }
 
-  public getMap(): ErrorsMap {
-    return this.map;
-  }
-
   private async createErrorsMap(): Promise<ErrorsMap> {
-    this.map = await this.buildMap();
+    this._map = await this.buildMap();
     setTimeout(this.createErrorsMap, this.CACHING_TIME);
-    return this.map;
+    return this._map;
   }
 
   private async buildMap(): Promise<ErrorsMap> {
@@ -53,7 +53,6 @@ export class ErrorMapFactory {
       map.set(subject, new Map());
       const errorsSubjectsMap: Map<string, ErrorDto> = map.get(subject);
       const errors = await this.getErrorsBySubject(subject);
-      /*  console.log('errrrrrrrrrrrorrs==================> ', subject, errors);*/
       errors.forEach((error) =>
         errorsSubjectsMap.set(error.code.toLowerCase(), error),
       );

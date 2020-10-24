@@ -1,9 +1,9 @@
-import { AbstractCheckSchema } from './abstractCheckSchema';
 import * as joi from 'joi';
 import { ObjectSchema } from 'joi';
-import { Schema } from '../../schema/schema';
-import { ValidationResult } from '../validationResult';
-import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
+import { AbstractCheckSchema } from '../validators/checks/abstractCheckSchema';
+import { Schema } from './schema';
+import { ValidationResult } from '../validators/validationResult';
+import { ValidationErrorDto } from '../support/dto/validators/validationError.dto';
 
 export class CheckSchema extends AbstractCheckSchema {
   protected readonly errCode = 'err-schema-validate';

@@ -3,6 +3,9 @@ import { ErrorsMapUser } from './mixins/errorsMapUser';
 import { ErrorsMap } from '../../errors/errorsMap';
 import { applyMixins } from '../../support/applyMixins';
 import { ErrorDto } from '../../support/dto/errors/error.dto';
+import { Schema } from '../../schema/schema';
+import { ValidationResult } from '../validationResult';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckErrorTypes
   extends AbstractCheckSchema
@@ -14,19 +17,20 @@ export class CheckErrorTypes
   public getSubjectErrorsMap: (subjectCode: string) => Map<string, ErrorDto>;
   public setErrorsMap: () => void;
 
-  public isValid(schema: string): boolean {
-    const subjectErrorsMap = this.getSubjectErrorsMap(this.schema.meta.subject);
-    const selectionTypes = this.schema.selections.map((selection) =>
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
+    const subjectErrorsMap = this.getSubjectErrorsMap(schema.meta.subject);
+    const selectionTypes = schema.selections.map((selection) =>
       selection.type.toLowerCase(),
     );
     for (const type of selectionTypes) {
       const findErr = subjectErrorsMap.get(type);
       if (findErr === undefined) {
-        this.errDescription = `Тип ошибки ${type} не соответствуют предмету размеченного файла ${this.schema.meta.subject}`;
-        this.errors.push(this.createError());
+        const errDescription = `Тип ошибки ${type} не соответствуют предмету размеченного файла ${schema.meta.subject}`;
+        errors.push(new ValidationErrorDto(this.errCode, errDescription));
       }
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }
 

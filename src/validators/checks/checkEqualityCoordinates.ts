@@ -2,7 +2,10 @@ import { AbstractCheckSchema } from './abstractCheckSchema';
 import { ErrorsMapUser } from './mixins/errorsMapUser';
 import { ErrorsMap } from '../../errors/errorsMap';
 import { applyMixins } from '../../support/applyMixins';
+import { ValidationResult } from '../validationResult';
+import { Schema } from '../../schema/schema';
 import { ErrorDto } from '../../support/dto/errors/error.dto';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckEqualityCoordinates
   extends AbstractCheckSchema
@@ -13,19 +16,22 @@ export class CheckEqualityCoordinates
   public setErrorsMap: () => void;
   public getSubjectErrorsMap: (subjectCode: string) => Map<string, ErrorDto>;
 
-  public isValid(schema: string): boolean {
-    for (const selection of this.schema.selections) {
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
+    for (const selection of schema.selections) {
       if (selection.startSelection === selection.endSelection) {
-        const error = this.getSubjectErrorsMap(this.schema.meta.subject).get(
+        const error = this.getSubjectErrorsMap(schema.meta.subject).get(
           selection.type.toLowerCase(),
         );
         if (error && (!error.onFullText || !error.disclosure)) {
-          this.errors = [this.createError()];
+          errors.push(
+            new ValidationErrorDto(this.errCode, this.errDescription),
+          );
           break;
         }
       }
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }
 

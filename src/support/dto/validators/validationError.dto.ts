@@ -1,4 +1,4 @@
-export class ErrorDto {
+export class ValidationErrorDto {
   code: string;
   description: string;
 

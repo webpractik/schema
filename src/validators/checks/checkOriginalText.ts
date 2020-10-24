@@ -1,30 +1,32 @@
 import { AbstractCheckSchema } from './abstractCheckSchema';
-import { TextHandler } from './mixins/textHandler';
-import { applyMixins } from '../../support/applyMixins';
+import { ValidationResult } from '../validationResult';
+import { Schema } from '../../schema/schema';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
-export class CheckOriginalText
-  extends AbstractCheckSchema
-  implements TextHandler {
-  _textCheckCallback: (publicId: string, text: string) => boolean;
-  protected errCode = 'err-text-handler-callback';
-  protected errDescription = 'функция-замыкание вернула false';
+export class CheckOriginalText extends AbstractCheckSchema {
+  private readonly _textCheckCallback: (
+    publicId: string,
+    text: string,
+  ) => boolean;
+  protected readonly errCode = 'err-text-handler-callback';
+  protected readonly errDescription = 'функция-замыкание вернула false';
 
-  public setValidatesCallback: (
-    callback: (publicId: string, text: string) => boolean,
-  ) => void;
+  constructor(callback: (publicId: string, text: string) => boolean) {
+    super();
+    this._textCheckCallback = callback;
+  }
 
-  public isValid(schema: string): boolean {
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
     if (this._textCheckCallback !== undefined) {
       const resultCallback = this._textCheckCallback(
-        this.schema.meta.id,
-        this.schema.text,
+        schema.meta.id,
+        schema.text,
       );
       if (!resultCallback) {
-        this.errors.push(this.createError());
+        errors.push(new ValidationErrorDto(this.errCode, this.errDescription));
       }
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }
-
-applyMixins(CheckOriginalText, [TextHandler]);

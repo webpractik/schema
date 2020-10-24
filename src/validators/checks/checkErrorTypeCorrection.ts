@@ -1,12 +1,16 @@
 import { AbstractCheckSchema } from './abstractCheckSchema';
+import { ValidationResult } from '../validationResult';
+import { Schema } from '../../schema/schema';
+import { ValidationErrorDto } from '../../support/dto/validators/validationError.dto';
 
 export class CheckErrorTypeCorrection extends AbstractCheckSchema {
-  protected errCode = 'empty-correction';
-  protected errDescription =
+  protected readonly errCode = 'empty-correction';
+  protected readonly errDescription =
     ' У фрагмента ИСП не заполнено поле исправление "correction"';
 
-  public isValid(schema: string): boolean {
-    const correctionFragments = this.schema.selections.filter(
+  public validate(schema: Schema): ValidationResult {
+    const errors: ValidationErrorDto[] = [];
+    const correctionFragments = schema.selections.filter(
       (element) => element.type.toUpperCase() === 'ИСП',
     );
     if (correctionFragments.length > 0) {
@@ -14,9 +18,9 @@ export class CheckErrorTypeCorrection extends AbstractCheckSchema {
         (element) => element.correction === '',
       );
       if (emptyCorrectionElement) {
-        this.errors.push(this.createError());
+        errors.push(new ValidationErrorDto(this.errCode, this.errDescription));
       }
     }
-    return this.hasNoErrors();
+    return this.createNewValidationResult(errors);
   }
 }

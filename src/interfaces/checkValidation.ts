@@ -1,7 +1,5 @@
-import { ErrorDto } from '../support/dto/validators/error.dto';
+import { Schema } from '../schema/schema';
 
 export interface CheckValidation {
-  isValid(schema: string): boolean;
-
-  getErrors(): ErrorDto[];
+  validate(schema: Schema): void;
 }
