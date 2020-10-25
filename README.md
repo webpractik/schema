@@ -1,8 +1,10 @@
-# Schema: пакет json схемы для обмена данными в рамках конкурса.
+# Upgreat Readable Schema
 
-Содержит в себе валидатор схемы.
+Схема обмена данных в рамках конкурса [Прочтение](https://ai.upgreat.one/).
+- Работа с типом
+- Валидация
 
-## Начало работы: конфигурирование объекта Validator
+## Валидация
 
 Перед использованием валидации нужно получить объект ErrorMap - Обязательный этап
 
@@ -33,15 +35,25 @@ validator.addChecker(
 
 ```ts
 async function example() {
+  // создаем объект Schema
   const schema = Schema.fromJson(jsonDoc);
+
+  // Скачиваем каталог ошибок
   const errMap = await ErrorMapFactory.createErrorMap();
+  
+  // Создаем экземпляр валидатора
   const validator = new Validator();
   validator.setErrorsMap(errMap);
+
+  // Можем добавлять валидации, в данном случае можно добавить проверку на оригальность текста
+  // используя внутренний источник данных
   validator.addChecker(
     new CheckOriginalText((publicId, text) => {
       return true;
     }),
   );
+  
+  // Получаем результат валидации
   const resultValidation = validator.validate(schema);
   console.log(
     'resultValidation',
