@@ -53,5 +53,6 @@ async function example() {
 -    CheckFullTextErrorsCoordinates - Общие ошибки всегда имеют нулевые "startSelection", "endSelection"
 -    CheckEqualityCoordinates - "startSelection" и "endSelection" не равны
 -    CheckUniqueTag - Отсутствует ситуации с уникальным значением поля "tag" в рамках одного файла.
+-    CheckOriginalText - проверка на совпадения текста. Присланный текст в json должен совпадать с оригинальным (страхуемся на случай что присланный originalText не был изменен). Для работы ошибки необходимо зарегистрировать callback который берет текст по умолчанию.
 
-Эти проверки запускаются по умолчанию.
+Все проверки кроме CheckOriginalText запускаются по умолчанию.
