@@ -29,6 +29,8 @@ validator.addChecker(
 );
 ```
 
+
+
 ## Пример работы
 
 ```ts
@@ -50,3 +52,18 @@ async function example() {
   );
 }
 ```
+
+## Список проверок
+
+Для проверки логики разметки Validator использует ряд проверок: 
+-    CheckEmptyFieldType - Отсутствуют фрагменты с пустыми типами ошибок "type" 
+-    CheckErrorTypeCorrection - У фрагмента ИСП всегда заполнено поле исправление "correction"
+-    CheckRangeMarkup - Попадение цифр диапазона разметок (начало и конец) в длину текста.
+-    CheckStartCoordinates - "endSelection" больше чем "startSelection"
+-    CheckErrorTypes - Соответствие размеченных типов ошибок предмету
+-    CheckSubTypes - Соответствие подтипов типам.
+-    CheckFullTextErrorsCoordinates - Общие ошибки всегда имеют нулевые "startSelection", "endSelection"
+-    CheckEqualityCoordinates - "startSelection" и "endSelection" не равны
+-    CheckUniqueTag - Отсутствует ситуации с уникальным значением поля "tag" в рамках одного файла.
+
+Эти проверки запускаются по умолчанию.
