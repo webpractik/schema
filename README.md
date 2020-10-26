@@ -1,49 +1,38 @@
-# Schema: пакет json схемы для обмена данными в рамках конкурса.
+# Upgreat Readable Schema
 
-Содержит в себе валидатор схемы.
+Схема обмена данных в рамках конкурса [Прочтение](https://ai.upgreat.one/).
+- Работа с типом
+- Валидация
 
-## Начало работы: конфигурирование объекта Validator
-
-Перед использованием валидации нужно получить объект ErrorMap - Обязательный этап
-
+## Работа с типом
 ```ts
-const errMap = await ErrorMapFactory.createErrorMap();
-validator.setErrorsMap(errMap);
+const schema = Schema.fromJson(jsonDoc);
 ```
+При попытке создалть экземпляр, в случае если json не соответствует схеме, вызовется throw new Exception.
 
-Далее в объект валидации нужно передать созданный объект ErrorMapFactory - Обязательный этап
-
-```ts
-const validator = new Validator();
-validator.setErrorsMapFactory(errorMapFactory);
-```
-
-Далее для проверки исходного текста объект validator может принять функцию для запуска во время проверки.
-В качестве входных данных она принимает публичный id текста и исходный текст
-
-```ts
-validator.addChecker(
-  new CheckOriginalText((publicId, text) => {
-    return true;
-  }),
-);
-```
-
-
-
-## Пример работы
+## Пример работы валидации
 
 ```ts
 async function example() {
+  // создаем объект Schema
   const schema = Schema.fromJson(jsonDoc);
+
+  // Скачиваем каталог ошибок
   const errMap = await ErrorMapFactory.createErrorMap();
+  
+  // Создаем экземпляр валидатора
   const validator = new Validator();
   validator.setErrorsMap(errMap);
+
+  // Можем добавлять валидации, в данном случае можно добавить проверку на оригальность текста
+  // используя внутренний источник данных
   validator.addChecker(
     new CheckOriginalText((publicId, text) => {
       return true;
     }),
   );
+  
+  // Получаем результат валидации
   const resultValidation = validator.validate(schema);
   console.log(
     'resultValidation',
@@ -52,8 +41,7 @@ async function example() {
   );
 }
 ```
-
-## Список проверок
+## Перечень проверок
 
 Для проверки логики разметки Validator использует ряд проверок: 
 -    CheckEmptyFieldType - Отсутствуют фрагменты с пустыми типами ошибок "type" 
