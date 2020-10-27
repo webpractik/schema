@@ -17,8 +17,11 @@ export class Schema {
    * @throws ValidateException
    */
   public static fromJson(jsonDoc: string): Schema {
-    const schema = JSON.parse(jsonDoc);
+    const schema: Schema = JSON.parse(jsonDoc);
     const validator = new CheckSchema();
+    if (!schema.selections) {
+      schema.selections = [];
+    }
     const validationResult = validator.validate(schema);
     if (!validationResult.status) {
       throw new Error(validationResult.getValidateErrorsMessage());
@@ -56,5 +59,9 @@ export class Schema {
 
   set text(value: string) {
     this._text = value;
+  }
+
+  set selections(value: SelectionDto[]) {
+    this._selections = value;
   }
 }

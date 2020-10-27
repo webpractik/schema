@@ -15,6 +15,9 @@ class Schema {
     static fromJson(jsonDoc) {
         const schema = JSON.parse(jsonDoc);
         const validator = new checkSchema_1.CheckSchema();
+        if (!schema.selections) {
+            schema.selections = [];
+        }
         const validationResult = validator.validate(schema);
         if (!validationResult.status) {
             throw new Error(validationResult.getValidateErrorsMessage());
@@ -44,6 +47,9 @@ class Schema {
     }
     set text(value) {
         this._text = value;
+    }
+    set selections(value) {
+        this._selections = value;
     }
 }
 exports.Schema = Schema;

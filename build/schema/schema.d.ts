@@ -19,4 +19,5 @@ export declare class Schema {
     get selections(): SelectionDto[];
     set criteria(value: CriteriaDto);
     set text(value: string);
+    set selections(value: SelectionDto[]);
 }
