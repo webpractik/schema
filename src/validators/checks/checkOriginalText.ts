@@ -9,7 +9,7 @@ export class CheckOriginalText extends AbstractCheckSchema {
     text: string,
   ) => boolean;
   protected readonly errCode = 'err-text-handler-callback';
-  protected readonly errDescription = 'функция-замыкание вернула false';
+  protected readonly errDescription = 'Переданный текст не соответствует неразмеченному тексту';
 
   constructor(callback: (publicId: string, text: string) => boolean) {
     super();

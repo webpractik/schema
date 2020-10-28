@@ -7,7 +7,7 @@ class CheckOriginalText extends abstractCheckSchema_1.AbstractCheckSchema {
     constructor(callback) {
         super();
         this.errCode = 'err-text-handler-callback';
-        this.errDescription = 'функция-замыкание вернула false';
+        this.errDescription = 'Переданный текст не соответствует неразмеченному тексту';
         this._textCheckCallback = callback;
     }
     validate(schema) {
