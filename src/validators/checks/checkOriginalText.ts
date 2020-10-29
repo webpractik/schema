@@ -9,7 +9,8 @@ export class CheckOriginalText extends AbstractCheckSchema {
     text: string,
   ) => boolean;
   protected readonly errCode = 'err-text-handler-callback';
-  protected readonly errDescription = 'Переданный текст не соответствует оригинальному тексту';
+  protected errDescription =
+    'Переданный текст не соответствует оригинальному тексту';
 
   constructor(callback: (publicId: string, text: string) => boolean) {
     super();
@@ -28,5 +29,9 @@ export class CheckOriginalText extends AbstractCheckSchema {
       }
     }
     return this.createNewValidationResult(errors);
+  }
+
+  public setErrMessage(description: string): void {
+    this.errDescription = description;
   }
 }

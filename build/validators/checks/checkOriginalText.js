@@ -20,5 +20,8 @@ class CheckOriginalText extends abstractCheckSchema_1.AbstractCheckSchema {
         }
         return this.createNewValidationResult(errors);
     }
+    setErrMessage(description) {
+        this.errDescription = description;
+    }
 }
 exports.CheckOriginalText = CheckOriginalText;

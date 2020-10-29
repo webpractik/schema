@@ -26,8 +26,7 @@ export class CheckFullTextErrorsCoordinates
       if (
         error &&
         (error.onFullText || error.disclosure) &&
-        selection.startSelection != 0 &&
-        selection.endSelection != 0
+        (selection.startSelection != 0 || selection.endSelection != 0)
       ) {
         errors.push(new ValidationErrorDto(this.errCode, this.errDescription));
         break;

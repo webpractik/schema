@@ -26,11 +26,12 @@ async function example() {
 
   // Можем добавлять валидации, в данном случае можно добавить проверку на оригальность текста
   // используя внутренний источник данных
-  validator.addChecker(
-    new CheckOriginalText((publicId, text) => {
-      return true;
-    }),
-  );
+ const textCheck = new CheckOriginalText((publicId, text) => {
+     return true;
+   });
+  // Изменить стандартное сообщение 
+   textCheck.setErrMessage('new error message');
+   validator.addChecker(textCheck);
   
   // Получаем результат валидации
   const resultValidation = validator.validate(schema);
