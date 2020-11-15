@@ -36,7 +36,7 @@ export class Validator extends AbstractCheckSchema {
     this.createChecks();
   }
 
-  public validate(schema: Schema): ValidationResult {
+  public validate(schema: Schema, debug: boolean = false): ValidationResult {
     let errors: ValidationErrorDto[] = [];
     for (const check of this.checks) {
       this.prepareCheck(check);
@@ -46,10 +46,12 @@ export class Validator extends AbstractCheckSchema {
           errors = errors.concat(resultCheckValidate.errors);
         }
       } catch (e) {
+        const debugTrace = debug ? e.trace : '';
         errors.push(
           new ValidationErrorDto(
             this.errCode,
             `Запуск проверки завершился ошибкой ${e.message}`,
+            debugTrace,
           ),
         );
       }
