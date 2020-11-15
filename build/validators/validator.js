@@ -31,7 +31,7 @@ class Validator extends abstractCheckSchema_1.AbstractCheckSchema {
         this.errCode = 'fatal-check-error';
         this.createChecks();
     }
-    validate(schema) {
+    validate(schema, debug = false) {
         let errors = [];
         for (const check of this.checks) {
             this.prepareCheck(check);
@@ -42,7 +42,8 @@ class Validator extends abstractCheckSchema_1.AbstractCheckSchema {
                 }
             }
             catch (e) {
-                errors.push(new validationError_dto_1.ValidationErrorDto(this.errCode, `Запуск проверки завершился ошибкой ${e.message}`));
+                const debugTrace = debug ? e.trace : '';
+                errors.push(new validationError_dto_1.ValidationErrorDto(this.errCode, `Запуск проверки завершился ошибкой ${e.message}`, debugTrace));
             }
         }
         return this.createNewValidationResult(errors);
@@ -59,6 +60,7 @@ class Validator extends abstractCheckSchema_1.AbstractCheckSchema {
     createChecks() {
         this.checks = this.listChecks.map((checkClass) => this.createCheck(checkClass));
     }
+    // noinspection JSMethodCanBeStatic
     createCheck(checkClass) {
         return new checkClass();
     }

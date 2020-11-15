@@ -1,5 +1,5 @@
 import { AbstractCheckSchema } from './checks/abstractCheckSchema';
-import { Schema } from '../schema/schema';
+import { Schema } from '..';
 import { ValidationResult } from './validationResult';
 import { ErrorsMap } from '../errors/errorsMap';
 export declare class Validator extends AbstractCheckSchema {
@@ -8,7 +8,7 @@ export declare class Validator extends AbstractCheckSchema {
     private errorsMap;
     protected errCode: string;
     constructor();
-    validate(schema: Schema): ValidationResult;
+    validate(schema: Schema, debug?: boolean): ValidationResult;
     setErrorsMap(errorsMap: ErrorsMap): void;
     addChecker(check: AbstractCheckSchema): void;
     private prepareCheck;

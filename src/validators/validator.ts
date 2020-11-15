@@ -3,14 +3,13 @@ import { AbstractCheckSchema } from './checks/abstractCheckSchema';
 import { isErrorsMapUser } from '../support/isErrorsMapUser';
 import { CheckRangeMarkup } from './checks/checkRangeMarkup';
 import { CheckSubTypes } from './checks/checkSubTypes';
-import { CheckOriginalText } from './checks/checkOriginalText';
 import { CheckEmptyFieldType } from './checks/checkEmptyFieldType';
 import { CheckErrorTypeCorrection } from './checks/checkErrorTypeCorrection';
 import { CheckStartCoordinates } from './checks/checkStartCoordinates';
 import { CheckEqualityCoordinates } from './checks/checkEqualityCoordinates';
 import { CheckUniqueTag } from './checks/checkUniqueTag';
 import { CheckFullTextErrorsCoordinates } from './checks/checkFullTextErrorsCoordinates';
-import { Schema } from '../schema/schema';
+import { Schema } from '..';
 import { ValidationResult } from './validationResult';
 import { ValidationErrorDto } from '../support/dto/validators/validationError.dto';
 import { ErrorsMap } from '../errors/errorsMap';
@@ -77,6 +76,7 @@ export class Validator extends AbstractCheckSchema {
     );
   }
 
+  // noinspection JSMethodCanBeStatic
   private createCheck(
     checkClass: new () => AbstractCheckSchema,
   ): AbstractCheckSchema {
