@@ -13,6 +13,7 @@ import { Schema } from '..';
 import { ValidationResult } from './validationResult';
 import { ValidationErrorDto } from '../support/dto/validators/validationError.dto';
 import { ErrorsMap } from '../errors/errorsMap';
+import { CheckNegativeCoordinates } from './checks/checkNegativeCoordinates';
 
 export class Validator extends AbstractCheckSchema {
   private readonly listChecks = [
@@ -25,6 +26,7 @@ export class Validator extends AbstractCheckSchema {
     CheckFullTextErrorsCoordinates,
     CheckEqualityCoordinates,
     CheckUniqueTag,
+    CheckNegativeCoordinates,
   ];
   private checks: AbstractCheckSchema[] = [];
   private errorsMap: ErrorsMap;

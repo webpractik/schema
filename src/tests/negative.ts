@@ -51,6 +51,7 @@ describe('Негативные сценарии', async () => {
     newJson.selections[0].endSelection = -1;
 
     const schema = Schema.fromJson(JSON.stringify(newJson));
+
     const resultValidation = validator.validate(schema);
 
     expect(resultValidation.status).to.be.false;
@@ -62,7 +63,6 @@ describe('Негативные сценарии', async () => {
 
     const schema = Schema.fromJson(JSON.stringify(newJson));
     const resultValidation = validator.validate(schema);
-
     expect(resultValidation.status).to.be.false;
   });
 
@@ -79,13 +79,11 @@ describe('Негативные сценарии', async () => {
 
   it('selections должен быть массивом', () => {
     const newJson = clone(json);
-
     // @ts-ignore
     newJson.selections = '';
 
-    const schema = Schema.fromJson(JSON.stringify(newJson));
-    const resultValidation = validator.validate(schema);
-
-    expect(resultValidation.status).to.be.false;
+    expect(() => {
+      Schema.fromJson(JSON.stringify(newJson));
+    }).to.throw();
   });
 });

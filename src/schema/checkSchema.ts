@@ -37,18 +37,20 @@ export class CheckSchema extends AbstractCheckSchema {
       text: joi.string().required(),
 
       selections: joi.array().items(
-        joi.object({
-          id: joi.number().required(),
-          startSelection: joi.number().required(),
-          endSelection: joi.number().required(),
-          type: joi.string().required(),
-          comment: joi.string().allow(''),
-          explanation: joi.string().allow(''),
-          correction: joi.string().allow(''),
-          tag: joi.string().allow(''),
-          group: joi.required(),
-          subtype: joi.string().allow(''),
-        }),
+        joi
+          .object({
+            id: joi.number().required().required(),
+            startSelection: joi.number().required(),
+            endSelection: joi.number().required(),
+            type: joi.string().required(),
+            comment: joi.string().allow(''),
+            explanation: joi.string().allow(''),
+            correction: joi.string().allow(''),
+            tag: joi.string().allow(''),
+            group: joi.required(),
+            subtype: joi.string().allow(''),
+          })
+          .required(),
       ),
       criteria: joi.object(),
     });
